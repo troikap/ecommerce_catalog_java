@@ -41,13 +41,10 @@ public class RabbitController {
      *
      * @apiGroup RabbitMQ GET
      *
-     * @apiDescription Escucha de mensajes logout desde auth. Invalida sesiones en cache.
+     * @apiDescription Escucha de mensajes logout desde auth. Invalida sesiones en
+     *                 cache.
      *
-     * @apiExample {json} Mensaje
-     *   {
-     *     "type": "article-exist",
-     *     "message" : "tokenId"
-     *   }
+     * @apiExample {json} Mensaje { "type": "article-exist", "message" : "tokenId" }
      */
     static void processLogout(RabbitEvent event) {
         TokenService.invalidate(event.message.toString());
@@ -59,17 +56,12 @@ public class RabbitController {
      *
      * @apiGroup RabbitMQ GET
      *
-     * @apiDescription Escucha de mensajes article-exist desde cart. Valida artículos
+     * @apiDescription Escucha de mensajes article-exist desde cart. Valida
+     *                 artículos
      *
-     * @apiExample {json} Mensaje
-     *     {
-     *     "type": "article-exist",
-     *     "exchange" : "{Exchange name to reply}"
-     *     "queue" : "{Queue name to reply}"
-     *     "message" : {
-     *         "referenceId": "{redId}",
-     *         "articleId": "{articleId}",
-     *     }
+     * @apiExample {json} Mensaje { "type": "article-exist", "exchange" : "{Exchange
+     *             name to reply}" "queue" : "{Queue name to reply}" "message" : {
+     *             "referenceId": "{redId}", "articleId": "{articleId}", }
      */
     static void processArticleExist(RabbitEvent event) {
         EventArticleExist exist = EventArticleExist.fromJson(event.message.toString());
@@ -96,15 +88,9 @@ public class RabbitController {
      *
      * @apiDescription Escucha de mensajes article-data desde cart. Valida artículos
      *
-     * @apiExample {json} Mensaje
-     *     {
-     *     "type": "article-exist",
-     *     "exchange" : "{Exchange name to reply}"
-     *     "queue" : "{Queue name to reply}"
-     *     "message" : {
-     *         "referenceId": "{redId}",
-     *         "articleId": "{articleId}"
-     *     }
+     * @apiExample {json} Mensaje { "type": "article-exist", "exchange" : "{Exchange
+     *             name to reply}" "queue" : "{Queue name to reply}" "message" : {
+     *             "referenceId": "{redId}", "articleId": "{articleId}" }
      */
     static void processArticleData(RabbitEvent event) {
         EventArticleExist exist = EventArticleExist.fromJson(event.message.toString());
@@ -116,7 +102,7 @@ public class RabbitController {
 
             EventArticleData data = new EventArticleData();
             data.articleId = article.id;
-            data.price = article.price;
+            // data.price = article.price;
             data.referenceId = exist.referenceId;
             data.stock = article.stock;
             data.valid = article.enabled;
@@ -139,25 +125,19 @@ public class RabbitController {
      *
      * @apiGroup RabbitMQ
      *
-     * @apiDescription Consume de mensajes order-placed desde Order con el topic "order_placed".
+     * @apiDescription Consume de mensajes order-placed desde Order con el topic
+     *                 "order_placed".
      *
-     * @apiSuccessExample {json} Mensaje
-     *     {
-     *     "type": "order-placed",
-     *     "message" : {
-     *         "cartId": "{cartId}",
-     *         "orderId": "{orderId}"
-     *         "articles": [{
-     *              "articleId": "{article id}"
-     *              "quantity" : {quantity}
-     *          }, ...]
-     *        }
-     *     }
+     * @apiSuccessExample {json} Mensaje { "type": "order-placed", "message" : {
+     *                    "cartId": "{cartId}", "orderId": "{orderId}" "articles":
+     *                    [{ "articleId": "{article id}" "quantity" : {quantity} },
+     *                    ...] } }
      */
     static void processOrderPlaced(RabbitEvent event) {
         try {
             OrderPlacedEvent exist = OrderPlacedEvent.fromJson(event.message.toString());
             System.out.println("RabbitMQ Consume order-placed : " + exist.orderId);
+            System.out.println("**************************** : ");
 
             Validator.validate(exist);
 
@@ -167,7 +147,7 @@ public class RabbitController {
 
                     EventArticleData data = new EventArticleData();
                     data.articleId = article.id;
-                    data.price = article.price;
+                    // data.price = article.price;
                     data.referenceId = exist.orderId;
                     data.stock = article.stock;
                     data.valid = article.enabled;
@@ -188,24 +168,18 @@ public class RabbitController {
     }
 
     /**
-    *
-    * @api {direct} cart/article-exist Validación de Artículos
-    *
-    * @apiGroup RabbitMQ POST
-    *
-    * @apiDescription Enviá de mensajes article-exist desde cart. Valida artículos
-    *
-    * @apiSuccessExample {json} Mensaje
-    *     {
-    *     "type": "article-exist",
-    *     "message" : {
-    *         "cartId": "{cartId}",
-    *         "articleId": "{articleId}",
-    *         "valid": True|False
-    *        }
-    *     }
-    *
-    */
+     *
+     * @api {direct} cart/article-exist Validación de Artículos
+     *
+     * @apiGroup RabbitMQ POST
+     *
+     * @apiDescription Enviá de mensajes article-exist desde cart. Valida artículos
+     *
+     * @apiSuccessExample {json} Mensaje { "type": "article-exist", "message" : {
+     *                    "cartId": "{cartId}", "articleId": "{articleId}", "valid":
+     *                    True|False } }
+     *
+     */
     public static void sendArticleValidation(RabbitEvent event, EventArticleExist send) {
         RabbitEvent eventToSend = new RabbitEvent();
         eventToSend.type = "article-exist";
@@ -215,27 +189,21 @@ public class RabbitController {
     }
 
     /**
-    *
-    * @api {direct} cart/article-exist Validación de Articulos
-    *
-    * @apiGroup RabbitMQ POST
-    *
-    * @apiDescription Enviá de mensajes article-data desde cart. Valida articulos
-    *
-    * @apiSuccessExample {json} Mensaje
-    *     {
-    *     "type": "article-data",
-    *     "message" : {
-    *         "cartId": "{cartId}",
-    *         "articleId": "{articleId}",
-    *         "valid": True|False,
-    *         "stock": {stock}
-    *         "price": {price}
-    *        }
-    *     }
-    *
-    */
+     *
+     * @api {direct} cart/article-exist Validación de Articulos
+     *
+     * @apiGroup RabbitMQ POST
+     *
+     * @apiDescription Enviá de mensajes article-data desde cart. Valida articulos
+     *
+     * @apiSuccessExample {json} Mensaje { "type": "article-data", "message" : {
+     *                    "cartId": "{cartId}", "articleId": "{articleId}", "valid":
+     *                    True|False, "stock": {stock} "price": {price} } }
+     *
+     */
     public static void sendArticleData(RabbitEvent event, EventArticleData send) {
+        System.out.println(
+                "sendArticleData ??????? " + event.exchange + " exchange " + event.queue + " queue " + send + " msj");
         RabbitEvent eventToSend = new RabbitEvent();
         eventToSend.type = "article-data";
         eventToSend.message = send;
@@ -252,8 +220,8 @@ public class RabbitController {
         public String referenceId;
         @SerializedName("valid")
         public boolean valid;
-        @SerializedName("price")
-        public double price;
+        // @SerializedName("price")
+        // public double price;
         @SerializedName("stock")
         public int stock;
 

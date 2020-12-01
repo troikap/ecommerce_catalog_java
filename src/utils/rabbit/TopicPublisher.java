@@ -10,11 +10,12 @@ import com.rabbitmq.client.ConnectionFactory;
 import utils.server.Environment;
 
 /**
- * La cola topic permite que varios consumidores escuchen el mismo evento
- * topic es muy importante por es el evento que se va a escuchar
- * Para que un consumer escuche los eventos debe estar conectado al mismo exchange y escuchar el topic adecuado
- * queue permite distribuir la carga de los mensajes entre distintos consumers, los consumers con el mismo queue name
- * comparten la carga de procesamiento de mensajes, es importante que se defina el queue
+ * La cola topic permite que varios consumidores escuchen el mismo evento topic
+ * es muy importante por es el evento que se va a escuchar Para que un consumer
+ * escuche los eventos debe estar conectado al mismo exchange y escuchar el
+ * topic adecuado queue permite distribuir la carga de los mensajes entre
+ * distintos consumers, los consumers con el mismo queue name comparten la carga
+ * de procesamiento de mensajes, es importante que se defina el queue
  */
 public class TopicPublisher {
 
@@ -29,7 +30,8 @@ public class TopicPublisher {
 
             channel.basicPublish(exchange, topic, null, message.toJson().getBytes());
 
-            Logger.getLogger("RabbitMQ").log(Level.INFO, "RabbitMQ Emit " + message.type);
+            Logger.getLogger("RabbitMQ").log(Level.INFO,
+                    "RabbitMQ Emit publish TopicPublisher (catalogo) " + message.type);
         } catch (Exception e) {
             Logger.getLogger("RabbitMQ").log(Level.SEVERE, "RabbitMQ no se pudo encolar " + message.type, e);
         }

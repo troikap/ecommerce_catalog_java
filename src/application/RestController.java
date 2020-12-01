@@ -50,6 +50,7 @@ public class RestController {
      */
     public static String addArticle(Request req, Response res) {
         try {
+            System.out.println("BODY " + req.body());
             TokenService.validateAdmin(req.headers("Authorization"));
 
             Article article = Article.newArticle(NewData.fromJson(req.body()));
